@@ -24,6 +24,29 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             salt.master_key = "salt/key/master.pem"
             salt.master_pub = "salt/key/master.pub"
         end
-
     end
+
+    #Minion1 - 64 bit Ubuntu
+    config.vm.define "dev-ubuntu-1" do |dev-ubuntu-1|
+        dev-ubuntu-1.vm.box = "hashicorp/precise64"
+        dev-ubuntu-1.vm.network "public_network"
+
+        #project/ will be where you will have to checkout your project into
+        dev-ubuntu-1.vm.synced_folder "project", "/project"
+        dev-ubuntu-1.vm.provision :shell, path: "bootstrap-minion/minion-ubuntu.sh"
+
+        dev-ubuntu-1.vm.provider do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "2048"]
+        end
+
+        #Set up as salt minion
+        dev-ubuntu-1.vm.provision :salt do |salt|
+            salt.no_minion = false
+            salt.install_type  ="develop"
+            salt.minion_config = "salt/minion"
+            salt.minion_key = "salt/key/minion.pem"
+            salt.minion_pub = "salt/key/minion.pub"
+        end
+    end
+
 end
