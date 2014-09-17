@@ -25,6 +25,7 @@ Saltstack allows you to easily configure a basic flavor of VM to suit your requi
 ####Aim
 - Developer host machine should be void of any platform specific install or configuration
 - Remove requirement of committing vendor libraries to a project repository
+- Provide access to local continuous intergration environment
 
 ####Flow
 - Start up `salt-master` and any other `minions` with Vagrant.
