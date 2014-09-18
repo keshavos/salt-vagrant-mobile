@@ -27,22 +27,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
 
     #Minion1 - 64 bit Ubuntu
-    config.vm.define "dev-ubuntu-1" do |dev-ubuntu-1|
-        dev-ubuntu-1.vm.box = "hashicorp/precise64"
-        dev-ubuntu-1.vm.network "public_network"
+    config.vm.define "devubuntu1" do |devubuntu1|
+        devubuntu1.vm.box = "drifty/ionic-android"
+        devubuntu1.vm.network "public_network"
 
         #project/ will be where you will have to checkout your project into
-        dev-ubuntu-1.vm.synced_folder "project", "/project"
-        dev-ubuntu-1.vm.provision :shell, path: "bootstrap-minion/minion-ubuntu.sh"
+        devubuntu1.vm.synced_folder "project", "/project"
+        devubuntu1.vm.provision :shell, path: "bootstrap-minion/minion-ubuntu.sh"
 
-        dev-ubuntu-1.vm.provider do |vb|
+        devubuntu1.vm.provider "virtualbox" do |vb|
             vb.customize ["modifyvm", :id, "--memory", "2048"]
+            vb.customize ["usbfilter", "add", "0", "--target", :id, "--name", "android", "--vendorid", "0x18d1"]
         end
 
         #Set up as salt minion
-        dev-ubuntu-1.vm.provision :salt do |salt|
+        devubuntu1.vm.provision :salt do |salt|
             salt.no_minion = false
-            salt.install_type  ="develop"
+            salt.install_type  ="stable"
             salt.minion_config = "salt/minion"
             salt.minion_key = "salt/key/minion.pem"
             salt.minion_pub = "salt/key/minion.pub"
