@@ -20,9 +20,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         master.vm.provision :salt do |salt|
             salt.install_master = true
             # Config Options
-            salt.master_config = "salt/master"
-            salt.master_key = "salt/key/master.pem"
-            salt.master_pub = "salt/key/master.pub"
+            salt.master_config = "salt-configs/master"
+            salt.master_key = "salt-configs/key/master.pem"
+            salt.master_pub = "salt-configs/key/master.pub"
         end
     end
 
@@ -37,6 +37,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         devubuntu1.vm.provider "virtualbox" do |vb|
             vb.customize ["modifyvm", :id, "--memory", "2048"]
+            vb.gui = "true"
             vb.customize ["usbfilter", "add", "0", "--target", :id, "--name", "android", "--vendorid", "0x18d1"]
         end
 
@@ -44,10 +45,32 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         devubuntu1.vm.provision :salt do |salt|
             salt.no_minion = false
             salt.install_type  ="stable"
-            salt.minion_config = "salt/minion"
-            salt.minion_key = "salt/key/minion.pem"
-            salt.minion_pub = "salt/key/minion.pub"
+            salt.minion_config = "salt-configs/minion"
+            salt.minion_key = "salt-configs/key/minion.pem"
+            salt.minion_pub = "salt-configs/key/minion.pub"
         end
     end
+
+    #Jenkins1 - 64 bit Ubuntu
+    config.vm.define "jenkinsubuntu" do |jenkinsubuntu|
+
+        jenkinsubuntu.vm.box = "hashicorp/precise64"
+        jenkinsubuntu.vm.network "public_network"
+
+        jenkinsubuntu.vm.provider "virtualbox" do |vb|
+            vb.customize ["modifyvm", :id, "--memory", "2048"]
+            #vb.gui = true
+        end
+
+        #Set up as salt minion
+        jenkinsubuntu.vm.provision :salt do |salt|
+            salt.no_minion = false
+            salt.install_type  ="stable"
+            salt.minion_config = "salt-configs/minion"
+            salt.minion_key = "salt-configs/key/minion.pem"
+            salt.minion_pub = "salt-configs/key/minion.pub"
+        end
+    end
+
 
 end
